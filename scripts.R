@@ -57,28 +57,25 @@ res_df[res_df$Gene.Name %in% genes_to_check, ]
 # get normalized counts
 rld <- rlog(dds, blind = FALSE)
 
-# select top genes (e.g. top 30 by variance or padj)
+# select top genes 
 topVarGenes <- head(order(rowVars(assay(rld)), decreasing = TRUE), 30)
 
 library(pheatmap)
-# If needed, make sure colnames are correct
 colnames(genes) <- c("Gene.ID", "Gene.Name")
 
-# Transform your data
+
 vsd <- vst(dds, blind = TRUE)
 
-# Select top variable genes (or your own subset)
 topVarGenes <- head(order(rowVars(assay(vsd)), decreasing = TRUE), 30)
 top_mat <- assay(vsd)[topVarGenes, ]
 
 # Replace Ensembl IDs with gene names
 gene_names <- genes$Gene.Name[match(rownames(top_mat), genes$Gene.ID)]
 
-# Optional: keep Ensembl ID if no gene name is found
+# keep Ensembl ID if no gene name is found
 gene_names[is.na(gene_names)] <- rownames(top_mat)[is.na(gene_names)]
 rownames(top_mat) <- gene_names
 
-# Plot heatmap with gene symbols
 
 pheatmap(top_mat,
          cluster_rows = TRUE,
